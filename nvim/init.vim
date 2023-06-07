@@ -160,6 +160,7 @@ set exrc
 " set gfn=Iosevka\ Extralight\ Nerd\ Font\ Complete:h14
 " set gfn=Iosevka\ Nerd\ Font\ Mono\ Extralight:h14
 set gfn=Iosevka\ Nerd\ Font\ Mono:h18  " this makes Neovide work
+" set gfn=Iosevka\ Custom\ Light\ Nerd\ Font\ Complete:h18  " this makes Neovide work
 nnoremap <Space> <Nop>
 let mapleader = " "
 
@@ -225,8 +226,18 @@ vnoremap <Leader>P "+P
 " more convenient window movement
 let g:NERDTreeMapJumpNextSibling = ''
 let g:NERDTreeMapJumpPrevSibling = ''
+
+" function Splitresize()
+"   let hmax = max([winwidth(0), float2nr(&columns*0.66), 90])
+"   let vmax = max([winheight(0), float2nr(&lines*0.66), 25])
+"   exe "vertical resize" . (min([hmax, 140]))
+"   exe "resize" . (min([vmax, 60]))
+" endfunction
 nnoremap <C-j> <C-w>w
 nnoremap <C-k> <C-w>W
+" nnoremap <silent><C-j> <C-W>w:call Splitresize()<CR>
+" nnoremap <silent><C-k> <C-W>W:call Splitresize()<CR>
+
 " (Un)wrap argument lists and object literals
 nnoremap <silent> <Leader>a :ArgWrap<CR>
 let g:argwrap_padded_braces = '{'

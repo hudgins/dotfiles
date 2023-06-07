@@ -37,7 +37,8 @@ if has("nvim")
   Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 
   Plug 'stevearc/aerial.nvim'
-  Plug 'github/copilot.vim'
+  Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+  " Plug 'github/copilot.vim'
 
 "  Plug 'windwp/nvim-autopairs'
 "  Plug 'windwp/nvim-ts-autotag'
