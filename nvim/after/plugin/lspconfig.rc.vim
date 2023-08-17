@@ -102,9 +102,9 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities()
 --  vim.lsp.protocol.make_client_capabilities()
 --)
 
-nvim_lsp.flow.setup {
-  capabilities = capabilities
-}
+-- nvim_lsp.flow.setup {
+--   capabilities = capabilities
+-- }
 
 nvim_lsp.tsserver.setup {
   filetypes = { "javascript", "typescript", "typescriptreact", "typescript.tsx" },
