@@ -1,0 +1,8 @@
+theme = dark:gruvboxdarkhard,light:gruvboxlighthard 
+# font-family = "IosevkaTerm Nerd Font Mono"
+font-family = "MesloLGS NF"
+font-size = 18
+cursor-color = "red"
+cursor-style-blink = false
+background-opacity = 0.8
+background-blur-radius = 20
