@@ -1,3 +1,9 @@
+require("fzf-lua").setup({
+  files = {
+    formatter = "path.filename_first", -- places file name first
+  },
+})
+
 return {
   {
     "ellisonleao/gruvbox.nvim",

@@ -225,3 +225,14 @@ $customer\040=\040null;
 $customer?->balance\040/\040100;
 (array)null
 (array)[null]
+$name\040=\040'joe'
+$last\040=\040'smith'
+$disp\040=\040$name\040?\040"{$name}\040{$last}"\012:\040''
+$disp
+$disp\040=\040$name\040?\040"{$name}\040{$last\040?:\040''}"
+$disp\040=\040$name\040..\040$last
+$disp\040=\040$name\040..\040$last;
+$disp\040=\040$name\040.\040$last;
+$name\040=\040'joe'
+$last\040=\040'smith'
+$disp\040=\040$name\040.\040$last;
