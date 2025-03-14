@@ -1,7 +1,18 @@
 require("fzf-lua").setup({
-  files = {
-    formatter = "path.filename_first", -- places file name first
-  },
+  -- files = {
+  --   formatter = "path.dirname_first", -- places file name first
+  -- },
+  -- buffers = {
+  --   formatter = "path.dirname_first", -- places file name first
+  -- },
+  -- git_files = {
+  --   formatter = "path.dirname_first", -- places file name first
+  -- },
+  winopts = {
+    preview = {
+      flip_columns = 180
+    }
+  }
 })
 
 return {
@@ -89,5 +100,56 @@ return {
   },
   {
     "eandrju/cellular-automaton.nvim",
+    keys = {
+      { mode = { "n" }, "<leader>z", "<cmd>CellularAutomaton make_it_rain<CR>", desc = "Make it rain!" },
+    }
   },
+  {
+    "nanotee/zoxide.vim",
+  },
+  {
+    "pmizio/typescript-tools.nvim",
+    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    opts = {},
+  },
+  {
+    "https://git.sr.ht/~foosoft/argonaut.nvim",
+    keys = {
+      { mode = { "n" }, "<leader>a", "<cmd>ArgonautToggle<CR>", desc = "Toggle argument wrapping" },
+-- vim.keymap.set('n', '<leader>a', ':<c-u>ArgonautToggle<cr>', {noremap = true, silent = true})
+-- vim.keymap.set({'x', 'o'}, 'ia', ':<c-u>ArgonautObject inner<cr>', {noremap = true, silent = true})
+-- vim.keymap.set({'x', 'o'}, 'aa', ':<c-u>ArgonautObject outer<cr>', {noremap = true, silent = true})
+-- vim.keymap.set({'x', 'o', 'n'}, '<leader>n', ':<c-u>ArgonautObject inner<cr>', {noremap = true, silent = true})
+-- vim.keymap.set({'x', 'o', 'n'}, '<leader>p', ':<c-u>ArgonautObject outer<cr>', {noremap = true, silent = true})
+    },
+    opts = {
+      brace_last_indent = false,
+      brace_last_wrap = true,
+      brace_pad = false,
+      comma_last = true,
+      comma_prefix = false,
+      comma_prefix_indent = false,
+      limit_cols = 512,
+      limit_rows = 64,
+      by_filetype = {
+          php = {comma_last = true},
+      },
+    }
+  },
+  -- {
+  --   'royanirudd/clipboard-history.nvim',
+  --   opts = {
+  --       max_history = 200  -- Optional: set max history (default 100)
+  --   }
+  -- },
+  {
+    "saghen/blink.cmp",
+    ---@module 'blink.cmp'
+    ---@type blink.cmp.Config
+    opts = {
+      sources = {
+        min_keyword_length = 5,
+      }
+    },
+  }
 }

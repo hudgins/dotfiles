@@ -10,6 +10,7 @@ opt.swapfile = false
 opt.backup = false
 opt.writebackup = false
 opt.wrap = false
+opt.cursorline = false
 
 g.autoformat = false
 
@@ -25,8 +26,10 @@ opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,n:blinkon3000,n:blink
 
 -- opt.gfn = "Iosevka Nerd Font:h18"
 -- g.ezguifont = "Iosevka Nerd Font:h18"
-opt.gfn = "VictorMono Nerd Font Mono:h18"
-g.ezguifont = "VictorMono Nerd Font Mono:h18"
+-- opt.gfn = "VictorMono Nerd Font Mono:h18"
+-- g.ezguifont = "VictorMono Nerd Font Mono:h18"
+-- opt.gfn = "VictorMono Nerd Font Mono:h18"
+-- g.ezguifont = "VictorMono Nerd Font Mono:h18"
 
 -- pico-8
 -- g.pico8_config.imitate_console = 0

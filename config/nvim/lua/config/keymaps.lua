@@ -3,13 +3,13 @@
 -- Add any additional keymaps here
 
 -- clipboard
-vim.keymap.set({'n', 'v'}, '<leader>y', '"+y', { desc = "Yank to system clipboard" })
-vim.keymap.set('n', '<leader>p', '"+p', { desc = "Paste from system clipboard" })
+vim.keymap.set({'n', 'v'}, '<leader>Y', '"+y', { desc = "Yank to system clipboard" })
+vim.keymap.set('n', '<leader>P', '"+p', { desc = "Paste from system clipboard" })
 vim.keymap.set({'n', 'v'}, '<D-c>', '"+y', { desc = "Yank to system clipboard" })
 vim.keymap.set('n', '<D-v>', '"+p', { desc = "Paste from system clipboard" })
 vim.keymap.set('i', '<D-v>', '<ESC>"+p', { desc = "Paste from system clipboard" })
 
-vim.keymap.set('n', '<leader>a', '<cmd>CellularAutomaton make_it_rain<CR>', { desc = "Make it rain!" })
+-- vim.keymap.set('n', '<leader>z', '<cmd>CellularAutomaton make_it_rain<CR>', { desc = "Make it rain!" })
 
 -- make simple blame as gb and move the others
 vim.keymap.set('n', '<leader>gb', '<cmd>Gitsigns blame_line<CR>', { desc = "Git blame line" })

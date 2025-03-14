@@ -15,6 +15,13 @@ return {
   },
   opts = function()
     local dap = require("dap")
+    -- vim.fn.sign_define('DapStopped', {text='➡️', texthl='Error', linehl='Search', numhl='Error'})
+    -- vim.api.nvim_set_hl(0, 'YellowCursor', { fg='#FFCC00', bg='None' })
+    -- vim.api.nvim_set_hl(0, 'YellowBack', { bg="#4C4C19" })
+    -- vim.fn.sign_define('DapStopped', { text='', texthl='YellowCursor', linehl='YellowBack', numhl=''})
+    dap.listeners.after['event_stopped']['my-plugin'] = function(session, body)
+      vim.cmd('NeovideFocus')
+    end
     dap.configurations.php = {
         {
             type = "php",
