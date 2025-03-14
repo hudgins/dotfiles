@@ -198,4 +198,4 @@ source <(fzf --zsh)
 # Bind ctrl-r but not up arrow
 eval "$(atuin init zsh --disable-up-arrow)"
 
-cd ~/projects/programs
+if [[ `hostname` == "pacmookbro.local" ]]; then cd ~/projects/programs; fi
