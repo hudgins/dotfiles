@@ -145,5 +145,8 @@ return {
         min_keyword_length = 5,
       }
     },
-  }
+  },
+  {
+    "bakudankun/pico-8.vim",
+  },
 }
