@@ -124,13 +124,14 @@ bindkey -M viins '^p' insert-last-word
 #   fi
 # }
 alias vim=nvim
-vvim() {
-  if [ -z "$@" ]; then
-    /Applications/Neovide.app/Contents/MacOS/neovide `fzf`
-  else
-    /Applications/Neovide.app/Contents/MacOS/neovide neovide $@
-  fi
-}
+alias vvim=/Applications/Neovide.app/Contents/MacOS/neovide
+# vvim() {
+#   if [ -z "$@" ]; then
+#     /Applications/Neovide.app/Contents/MacOS/neovide `fzf`
+#   else
+#     /Applications/Neovide.app/Contents/MacOS/neovide neovide $@
+#   fi
+# }
 code() {
   if [ -z "$@" ]; then
     /usr/local/bin/code `fzf`
