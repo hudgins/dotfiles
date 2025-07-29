@@ -13,9 +13,10 @@ opt.wrap = false
 opt.cursorline = false
 
 g.autoformat = false
+g.fzf_history_dir = "~/.local/share/fzf-history"
 
 -- neovide
-g.neovide_cursor_vfx_mode = "railgun" -- torpedo, railgun, pixiedust, wireframe, ripple, sonicboom, 
+g.neovide_cursor_vfx_mode = "railgun" -- torpedo, railgun, pixiedust, wireframe, ripple, sonicboom,
 g.neovide_cursor_smooth_blink = false -- performance hit of nearly 15x
 g.neovide_transparency = 0.8
 g.neovide_window_blurred = true

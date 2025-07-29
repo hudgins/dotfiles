@@ -1,0 +1,54 @@
+#!/usr/bin/python3
+import sys
+
+def stylize_text_md(text):
+    result = []
+    for i, char in enumerate(text):
+        if char.isspace():
+            result.append(char)
+        elif (i + 1) % 3 == 0:
+            result.append(f"*{char}*")  # Italic every third letter
+        elif (i + 1) % 2 == 0:
+            result.append(f"**{char}**")  # Bold every second letter
+        else:
+            result.append(char)
+    return "".join(result)
+
+def stylize_text_slack(text):
+    ZWSP = "\u200B"  # Zero-width space to prevent Slack from breaking formatting
+    result = []
+    for i, char in enumerate(text):
+        if char.isspace():
+            result.append(char)
+        elif (i + 1) % 3 == 0:
+            result.append(f"_{char}_{ZWSP}")  # Italic every third letter
+        elif (i + 1) % 2 == 0:
+            result.append(f"*{char}*{ZWSP}")  # Bold every second letter
+        else:
+            result.append(char + ZWSP)  # Add ZWSP to prevent breaking formatting
+    return "".join(result)
+
+def stylize_text_term(text):
+    BOLD = "\033[1m"
+    ITALIC = "\033[3m"
+    RESET = "\033[0m"
+
+    result = []
+    for i, char in enumerate(text):
+        if char.isspace():
+            result.append(char)
+        elif (i + 1) % 3 == 0:
+            result.append(f"{ITALIC}{char}{RESET}")  # Italic every third letter
+        elif (i + 1) % 2 == 0:
+            result.append(f"{BOLD}{char}{RESET}")  # Bold every second letter
+        else:
+            result.append(char)
+    return "".join(result)
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        input_text = " ".join(sys.argv[1:])
+    else:
+        input_text = input("Enter text: ")
+    print(stylize_text_slack(input_text))
+

@@ -1,2 +1,9 @@
 config/nvim/lazy-lock.json
 config/raycast
+config/ngrok
+config/claude
+config/github-copilot
+config/ghostty/config.*.bak
+config/psysh
+config/stripe
+config/wtf/log.txt

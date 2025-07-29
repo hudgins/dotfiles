@@ -1,8 +1,15 @@
 theme = dark:gruvboxdarkhard,light:gruvboxlighthard 
 # font-family = "IosevkaTerm Nerd Font Mono"
-font-family = "MesloLGS NF"
+# font-family = "MesloLGS NF"
+font-family = "VictorMono Nerd Font Mono"
+font-thicken = true
 font-size = 18
 cursor-color = "red"
-cursor-style-blink = false
-background-opacity = 0.8
-background-blur-radius = 20
+# cursor-style-blink = false
+minimum-contrast = 2
+background-opacity = 0.9
+background = "black"
+# background-blur-radius = 20
+# unfocused-split-opacity = 0.85
+custom-shader = shaders/cursor_blaze.glsl
+keybind = shift+enter=text:\n
