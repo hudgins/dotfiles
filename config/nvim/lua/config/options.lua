@@ -34,3 +34,8 @@ opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,n:blinkon3000,n:blink
 
 -- pico-8
 -- g.pico8_config.imitate_console = 0
+
+-- php
+vim.g.lazyvim_php_lsp = "intelephense"
+-- vim.lsp.set_log_level("debug")
+-- tail -f ~/.local/state/nvim/lsp.log | grep wp-content

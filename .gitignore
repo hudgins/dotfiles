@@ -7,3 +7,5 @@ config/ghostty/config.*.bak
 config/psysh
 config/stripe
 config/wtf/log.txt
+config/intelephense/license.txt
+config/lazygit/state.yml

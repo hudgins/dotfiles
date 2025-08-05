@@ -1,3 +1,4 @@
+keybind = shift+enter=text:\n
 theme = dark:gruvboxdarkhard,light:gruvboxlighthard 
 # font-family = "IosevkaTerm Nerd Font Mono"
 # font-family = "MesloLGS NF"
@@ -11,5 +12,52 @@ background-opacity = 0.9
 background = "black"
 # background-blur-radius = 20
 # unfocused-split-opacity = 0.85
+
+#blueprint, chalkboard, microchip, glass, holographic, paper, retro, xray
+macos-icon = xray
+split-divider-color = "darkred"
+
 custom-shader = shaders/cursor_blaze.glsl
-keybind = shift+enter=text:\n
+
+# custom-shader = shaders/animated-gradient-shader.glsl
+# custom-shader = shaders/bettercrt.glsl
+# custom-shader = shaders/bloom.glsl
+# custom-shader = shaders/cineShader-Lava.glsl
+# custom-shader = shaders/crt.glsl
+# custom-shader = shaders/cubes.glsl
+# custom-shader = shaders/cursor_blaze.glsl
+# custom-shader = shaders/cursor_blaze_no_trail.glsl
+# custom-shader = shaders/cursor_blaze_spark.glsl
+# custom-shader = shaders/cursor_blaze_tapered.glsl
+# custom-shader = shaders/cursor_frozen.glsl
+# custom-shader = shaders/cursor_smear.glsl
+# custom-shader = shaders/cursor_smear_fade.glsl
+# custom-shader = shaders/dither.glsl
+# custom-shader = shaders/drunkard.glsl
+# custom-shader = shaders/fireworks-rockets.glsl
+# custom-shader = shaders/fireworks.glsl
+# custom-shader = shaders/galaxy.glsl
+# custom-shader = shaders/gears-and-belts.glsl
+# custom-shader = shaders/glitchy.glsl
+# custom-shader = shaders/glow-rgbsplit-twitchy.glsl
+# custom-shader = shaders/gradient-background.glsl
+# custom-shader = shaders/in-game-crt.glsl
+# custom-shader = shaders/inside-the-matrix.glsl
+# custom-shader = shaders/just-snow.glsl
+# custom-shader = shaders/matrix-hallway.glsl
+# custom-shader = shaders/mnoise.glsl
+# custom-shader = shaders/negative.glsl
+# custom-shader = shaders/pixels.glsl
+# custom-shader = shaders/retro-terminal.glsl
+# custom-shader = shaders/scanline.glsl
+# custom-shader = shaders/sin-interference.glsl
+# custom-shader = shaders/smoke-and-ghost.glsl
+# custom-shader = shaders/spotlight.glsl
+# custom-shader = shaders/starfield-colors.glsl
+# custom-shader = shaders/starfield.glsl
+# custom-shader = shaders/tft.glsl
+# custom-shader = shaders/underwater.glsl
+# custom-shader = shaders/water.glsl
+
+# nice, but leaks memory
+# custom-shader = shaders/sparks-from-fire.glsl
