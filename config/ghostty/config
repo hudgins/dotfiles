@@ -15,6 +15,7 @@ background = "black"
 
 #blueprint, chalkboard, microchip, glass, holographic, paper, retro, xray
 macos-icon = xray
+mouse-hide-while-typing = true
 split-divider-color = "darkred"
 
 custom-shader = shaders/cursor_blaze.glsl
