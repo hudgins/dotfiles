@@ -2,6 +2,8 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
+local fzf_ignore = require("config.fzf_ignore")
+
 -- clipboard
 vim.keymap.set({'n', 'v'}, '<leader>Y', '"+y', { desc = "Yank to system clipboard" })
 vim.keymap.set('n', '<leader>P', '"+p', { desc = "Paste from system clipboard" })
@@ -37,3 +39,29 @@ vim.keymap.set('n', '<S-x>', vim.diagnostic.open_float, { desc = "Line Diagnosti
 
 -- weird little one-offs
 vim.keymap.set('n', '<leader>mc', 'cw✅<esc>', { desc = "Check this off" })
+
+-- fzf-lua with default ignores
+vim.keymap.set('n', '<leader>ff', function()
+  fzf_ignore.files({}, true)
+end, { desc = "Find Files (Root Dir, filtered)", silent = true })
+
+vim.keymap.set('n', '<leader>fF', function()
+  fzf_ignore.files({ root = false }, true)
+end, { desc = "Find Files (cwd, filtered)", silent = true })
+
+vim.keymap.set('n', '<leader>fg', function()
+  fzf_ignore.live_grep({}, true)
+end, { desc = "Live Grep (Root Dir, filtered)", silent = true })
+
+-- fzf-lua without ignores
+vim.keymap.set('n', '<leader>faf', function()
+  fzf_ignore.files({}, false)
+end, { desc = "Find Files (Root Dir, all)", silent = true })
+
+vim.keymap.set('n', '<leader>faF', function()
+  fzf_ignore.files({ root = false }, false)
+end, { desc = "Find Files (cwd, all)", silent = true })
+
+vim.keymap.set('n', '<leader>fag', function()
+  fzf_ignore.live_grep({}, false)
+end, { desc = "Live Grep (Root Dir, all)", silent = true })
