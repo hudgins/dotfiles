@@ -4,8 +4,12 @@ local common = require("neo-tree.sources.common.commands")
 
 local M = {}
 
+-- Reuse the manager.refresh helper so our source can participate in Neo-tree's
+-- standard command mappings (r/R).
 local refresh = utils.wrap(manager.refresh, "branch_diff")
 
+-- Convenience helper to safely fetch the currently focused node, guarding
+-- against nil state during preview redraws.
 local function get_current_node(state)
   local tree = state.tree
   if not tree then
@@ -24,6 +28,8 @@ local function notify_deleted(diff)
   vim.notify(message, vim.log.levels.WARN, { title = "Neo-tree Branch Diff" })
 end
 
+-- Wrap each open command so deleted entries show a friendly warning instead of
+-- attempting to re-create the file from thin air.
 local function open_with(cmd)
   return function(state)
     local node = get_current_node(state)
@@ -57,6 +63,8 @@ M.open_drop = open_with("drop")
 M.open_tab_drop = open_with("tab drop")
 M.refresh = refresh
 
+-- Fill in the rest of the Neo-tree command surface (yank, copy, etc.) so
+-- branch_diff behaves like any other tree source out of the box.
 common._add_common_commands(M)
 
 return M

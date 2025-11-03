@@ -1,6 +1,10 @@
 local highlights = require("neo-tree.ui.highlights")
 local common = require("neo-tree.sources.common.components")
 
+-- Extend the default Neo-tree components with branch-diff aware styling. We
+-- reuse the existing highlight groups so the output looks consistent with the
+-- built-in git status source.
+
 local status_icons = {
   A = "",
   M = "",
@@ -20,6 +24,8 @@ local status_highlights = {
   ["?"] = highlights.GIT_UNTRACKED,
 }
 
+-- Pull the diff metadata we attached in init.lua off the node so multiple
+-- components can share the same lookup logic.
 local function status_data(node)
   local extra = node.extra or {}
   local diff = extra.branch_diff
@@ -48,6 +54,8 @@ components.git_status = function(config, node, state)
   local status = data.status
   local text = symbols[status]
   if not text then
+    -- Fall back to sensible defaults when the user did not provide custom
+    -- glyphs for every possible status code.
     if status == "?" then
       text = symbols.untracked or "??"
     elseif status == "A" then
@@ -79,6 +87,8 @@ components.icon = function(config, node, state)
   if not data then
     return common.icon(config, node, state)
   end
+  -- Prefix the filename with the git status glyph (keeping the trailing space
+  -- that Neo-tree expects for alignment with other sources).
   return {
     text = data.icon .. " ",
     highlight = data.highlight or highlights.FILE_ICON,

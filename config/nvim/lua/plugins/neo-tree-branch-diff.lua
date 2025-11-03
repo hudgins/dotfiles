@@ -13,6 +13,8 @@ return {
   },
 
   config = function(_, opts)
+    -- Register the custom source once, even if other plugins already injected
+    -- extra Neo-tree sources.
     opts.sources = opts.sources or {}
     local has_source = false
     for _, source in ipairs(opts.sources) do
@@ -30,6 +32,9 @@ return {
       opts.branch_diff.use_default_mappings = false
     end
 
+    -- Renderer layout tuned for diff information: filename left, git status
+    -- column right. Users can override this block in their own config if they
+    -- want a different look.
     opts.branch_diff.renderers = opts.branch_diff.renderers or {
       root = {
         { "indent" },
@@ -59,6 +64,9 @@ return {
     }
 
     opts.branch_diff.window = opts.branch_diff.window or {}
+    -- Provide a minimal mapping set tailored for diff navigation while
+    -- avoiding Neo-tree's heavier default bindings (which expect filesystem
+    -- operations).
     opts.branch_diff.window.mappings = opts.branch_diff.window.mappings or {
       ["<cr>"] = "open",
       ["o"] = "open",
@@ -85,9 +93,13 @@ return {
       end
     end
     if not selector_has_branch then
+      -- Show up alongside filesystem/git_status tabs in the optional source
+      -- selector UI.
       table.insert(opts.source_selector.sources, { source = "branch_diff", display_name = " Branch Diff" })
     end
 
+    -- Register the source module before invoking setup so Neo-tree knows about
+    -- it when processing the combined configuration.
     require("neo-tree.sources.branch_diff")
     require("neo-tree").setup(opts)
   end,

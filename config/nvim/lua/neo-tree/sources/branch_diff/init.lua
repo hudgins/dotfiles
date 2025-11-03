@@ -4,6 +4,9 @@ local renderer = require("neo-tree.ui.renderer")
 local manager = require("neo-tree.sources.manager")
 local events = require("neo-tree.events")
 
+-- Configuration defaults for the custom Branch Diff source. Every key here can
+-- be overridden via `opts.branch_diff` in the user's Neo-tree setup.
+
 local default_config = {
   base_ref = nil,
   remote = "origin",
@@ -12,15 +15,21 @@ local default_config = {
   fallback_refs = nil,
 }
 
+-- Metadata used by Neo-tree to register the source.
 local M = {
   name = "branch_diff",
   display_name = " Branch Diff",
 }
 
+-- Lightweight table emptiness check so we can guard fallback lists without
+-- allocating intermediary structures.
 local function tbl_isempty(tbl)
   return not tbl or next(tbl) == nil
 end
 
+-- Invoke git with consistent working-directory and exit-code handling. Git
+-- returns exit code 1 for "diff found", so callers can whitelist additional
+-- codes via opts.valid_exit_codes.
 local function run_git(args, opts)
   opts = opts or {}
   local cmd = { "git" }
@@ -49,6 +58,10 @@ local function run_git(args, opts)
   return result
 end
 
+-- Decide which directory to treat as the active repo. Preference order:
+--   1. currently focused buffer
+--   2. existing state.path supplied by Neo-tree
+--   3. current working directory
 local function get_git_workdir(state)
   local function normalize(path)
     if not path or path == "" then
@@ -81,6 +94,7 @@ local function get_git_workdir(state)
   return vim.fn.getcwd()
 end
 
+-- Resolve the root of the git repository we are diffing.
 local function get_repo_root(state)
   local workdir = get_git_workdir(state)
   local output, err = run_git({ "rev-parse", "--show-toplevel" }, { cwd = workdir })
@@ -90,6 +104,7 @@ local function get_repo_root(state)
   return output[1]
 end
 
+-- Provide a friendly branch name for the tree header (falls back to "HEAD").
 local function get_head_branch(repo_root)
   local output = run_git({ "rev-parse", "--abbrev-ref", "HEAD" }, { cwd = repo_root })
   if not output or not output[1] or output[1] == "" then
@@ -98,6 +113,8 @@ local function get_head_branch(repo_root)
   return output[1]
 end
 
+-- Given a remote name (defaults to origin), return the branch its symbolic HEAD
+-- points to (e.g. origin/main). Nil if not set.
 local function resolve_remote_head(remote, repo_root)
   if not remote or remote == "" then
     return nil
@@ -165,6 +182,7 @@ local function collect_diff_entries(base_ref, config, repo_root)
       local parts = vim.split(line, "\t", { plain = true })
       local raw_status = parts[1]
       if raw_status and raw_status ~= "" then
+        -- The first character tells us the high-level change (A/M/D/etc.).
         local status = raw_status:sub(1, 1)
         local old_path, new_path
         if #parts == 2 then
@@ -192,6 +210,8 @@ local function collect_diff_entries(base_ref, config, repo_root)
     if untracked then
       for _, path in ipairs(untracked) do
         if path ~= "" then
+          -- Treat untracked files as git status "??" so components/commands can
+          -- present them like standard git_status entries.
           table.insert(entries, {
             status = "?",
             raw_status = "??",
@@ -208,6 +228,7 @@ local function collect_diff_entries(base_ref, config, repo_root)
   return entries
 end
 
+-- Guarantee directories have a children array when we need to append new node.
 local function ensure_children(node)
   if not node.children then
     node.children = {}
@@ -215,6 +236,7 @@ local function ensure_children(node)
   return node.children
 end
 
+-- Recursive sort to keep Neo-tree's ordering stable every refresh.
 local function sort_children(node)
   if not node or not node.children then
     return
@@ -230,6 +252,7 @@ local function sort_children(node)
   end
 end
 
+-- Turn the flat git output into a full Neo-tree node hierarchy.
 local function build_tree(entries, repo_root)
   local repo_name = vim.fn.fnamemodify(repo_root, ":t")
   local root = {
@@ -244,6 +267,8 @@ local function build_tree(entries, repo_root)
   local expanded = { [repo_root] = true }
 
   for _, entry in ipairs(entries) do
+    -- Split each file path and walk it downward, creating intermediate
+    -- directories as needed so we mirror the repo structure.
     local parts = vim.split(entry.relative_path, "/", { plain = true, trimempty = true })
     if #parts > 0 then
       local parent = root
@@ -298,6 +323,8 @@ local function build_tree(entries, repo_root)
   return root, expanded
 end
 
+-- Convenience helper so both the Neo-tree panel and the command line show
+-- identical status information when something goes wrong.
 local function show_message(state, message, level)
   renderer.show_nodes({
     {
@@ -312,6 +339,8 @@ local function show_message(state, message, level)
   end
 end
 
+-- Our config pipeline mirrors the built-in sources: defaults -> global setup ->
+-- per-state overrides (mostly coming from the user's opts.branch_diff table).
 local function merge_config(state)
   local merged = vim.tbl_deep_extend("force", {}, default_config)
   if M.config then
@@ -324,6 +353,8 @@ local function merge_config(state)
 end
 
 function M.navigate(state)
+  -- All git interaction happens synchronously, so mark the state as clean to
+  -- avoid Neo-tree showing a lingering "loading" state.
   state.dirty = false
 
   local repo_root, root_err = get_repo_root(state)
@@ -351,6 +382,8 @@ function M.navigate(state)
   local root, expanded = build_tree(entries, repo_root)
   root._is_expanded = true
   root.extra = root.extra or {}
+  -- Surface comparison metadata so components/commands can access it without
+  -- recomputing the branch info.
   root.extra.branch_diff = {
     base_ref = base_ref,
     branch = branch_name,
@@ -368,6 +401,8 @@ function M.navigate(state)
   end
 
   local label_repo = vim.fn.fnamemodify(repo_root, ":t")
+  -- Show both branch names in the root node so users immediately know what is
+  -- being compared.
   root.name = string.format("%s (%s ↔ %s)", label_repo, branch_name, base_ref)
 
   local default_expanded = { root.id }
@@ -376,7 +411,10 @@ function M.navigate(state)
       table.insert(default_expanded, id)
     end
   end
+  -- Remember which nodes should start expanded the next time the source opens.
   state.default_expanded_nodes = default_expanded
+  -- Persist summary info so other parts of the source can present it (e.g. the
+  -- renderer's title or status component).
   state.branch_diff = {
     base_ref = base_ref,
     branch = branch_name,
@@ -395,6 +433,8 @@ function M.setup(config, global_config)
   M.config = vim.tbl_deep_extend("force", {}, default_config, config or {})
 
   local function request_refresh()
+    -- Use a short debounce so multiple git events collapse into a single
+    -- refresh operation. This keeps the UI responsive on large repos.
     utils.debounce(
       "branch_diff_refresh",
       function()
@@ -407,12 +447,16 @@ function M.setup(config, global_config)
 
   manager.subscribe(M.name, {
     event = events.GIT_EVENT,
+    -- External git actions (pull, commit, etc.) emit this event so we keep the
+    -- diff list up to date even when changes happen outside Neovim.
     handler = request_refresh,
   })
 
   if global_config.enable_refresh_on_write then
     manager.subscribe(M.name, {
       event = events.VIM_BUFFER_CHANGED,
+      -- Buffer writes can produce git changes (e.g. new staging candidates). We
+      -- reuse the same debounce so a flurry of writes only triggers one refresh.
       handler = request_refresh,
     })
   end
