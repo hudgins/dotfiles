@@ -34,3 +34,6 @@ vim.keymap.set('n', '<left>', '<C-w>h', { desc = "Go to the left window" })
 vim.keymap.set('n', '<right>', '<C-w>l', { desc = "Go to the right window" })
 
 vim.keymap.set('n', '<S-x>', vim.diagnostic.open_float, { desc = "Line Diagnostics" })
+
+-- weird little one-offs
+vim.keymap.set('n', '<leader>mc', 'cw✅<esc>', { desc = "Check this off" })
