@@ -2,6 +2,7 @@ daynote() {
   local daynote_dir="${HOME}/.daynote"
   local template_path="${daynote_dir}/daynote_template.md"
   local entries_dir="${daynote_dir}/entries"
+  local draft_path="${daynote_dir}/draft.md"
   # These temporaries support editing and detecting whether anything changed.
   local tmp
   local tmp_orig
@@ -11,6 +12,7 @@ daynote() {
   local prev_entry_date
   local entry_date
   local nvim_status
+  local base_source
 
   # Ensure we have a place to collect finalized entries.
   mkdir -p "$entries_dir"
@@ -27,23 +29,33 @@ daynote() {
   today=$(date '+%Y-%m-%d')
   weekday=$(date '+%A')
 
-  # Render the template with today’s date placeholders.
-  awk -v date="$today" -v weekday="$weekday" '{
-    gsub("{{DATE}}", date)
-    gsub("{{WEEKDAY}}", weekday)
-    print
-  }' "$template_path" > "$tmp"
+  if [ -f "$draft_path" ]; then
+    # Resume from an unsent draft if it exists.
+    cp "$draft_path" "$tmp"
+    base_source="draft"
+  else
+    # Render the template with today’s date placeholders.
+    awk -v date="$today" -v weekday="$weekday" '{
+      gsub("{{DATE}}", date)
+      gsub("{{WEEKDAY}}", weekday)
+      print
+    }' "$template_path" > "$tmp"
 
-  # If the last saved entry is from a prior day, append it so unfinished work carries forward.
-  prev_entry_file=$(find "$entries_dir" -type f -name '*.md' -print 2>/dev/null | sort | tail -n1)
-  if [ -n "$prev_entry_file" ]; then
-    prev_entry_date=$(basename "$prev_entry_file" .md)
-    if [ "$prev_entry_date" != "$today" ]; then
-      if [ -s "$prev_entry_file" ]; then
-        printf "\n\n## Carryover from %s\n\n" "$prev_entry_date" >> "$tmp"
-        cat "$prev_entry_file" >> "$tmp"
+    # If the last saved entry is from a prior day, append it so unfinished work carries forward.
+    prev_entry_file=$(find "$entries_dir" -type f -name '*.md' -print 2>/dev/null | sort | tail -n1)
+    if [ -n "$prev_entry_file" ]; then
+      prev_entry_date=$(basename "$prev_entry_file" .md)
+      if [ "$prev_entry_date" != "$today" ]; then
+        if [ -s "$prev_entry_file" ]; then
+          printf "\n\n## Carryover from %s\n\n" "$prev_entry_date" >> "$tmp"
+          cat "$prev_entry_file" >> "$tmp"
+        fi
       fi
     fi
+
+    # Persist the freshly generated draft immediately so it can be resumed later.
+    cp "$tmp" "$draft_path"
+    base_source="new"
   fi
 
   # Remember the pre-edit state so we can tell if anything was saved.
@@ -64,8 +76,12 @@ daynote() {
 
   if [ ! -s "$tmp" ]; then
     # Guard against accidentally wiping the note before submission.
+    cp "$tmp" "$draft_path"
     return 0
   fi
+
+  # Always persist the latest edits so they can be resumed or submitted later.
+  cp "$tmp" "$draft_path"
 
   # Use the first ISO date in the file (usually from the header) to back-date the entry if needed.
   entry_date=$(grep -Eo '[0-9]{4}-[0-9]{2}-[0-9]{2}' "$tmp" | head -n1)
@@ -73,9 +89,18 @@ daynote() {
     entry_date="$today"
   fi
 
+  # Give the user a small window to cancel submission.
+  printf "Submitting to Day One in 5s (Ctrl+C to cancel): "
+  for _ in 1 2 3 4 5; do
+    printf "."
+    sleep 1
+  done
+  printf "\n"
+
   # Push the note into Day One and stash a copy for tomorrow’s carryover logic.
   if dayone new --date "$entry_date" --journal "Retreat Guru" < "$tmp"; then
     cp "$tmp" "${entries_dir}/${entry_date}.md"
+    rm -f "$draft_path"
   else
     echo "daynote: failed to create Day One entry." >&2
     cp "$tmp" "${entries_dir}/${entry_date}.md"
