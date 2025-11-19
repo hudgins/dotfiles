@@ -2,6 +2,7 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
+-- Wrap stock LazyVim pickers so we can flip the ignore list on/off per mapping.
 local fzf_ignore = require("config.fzf_ignore")
 
 -- clipboard
@@ -38,9 +39,15 @@ vim.keymap.set('n', '<right>', '<C-w>l', { desc = "Go to the right window" })
 vim.keymap.set('n', '<S-x>', vim.diagnostic.open_float, { desc = "Line Diagnostics" })
 
 -- weird little one-offs
-vim.keymap.set('n', '<leader>mc', 'cw✅<esc>', { desc = "Check this off" })
+vim.keymap.set('n', '<leader>mu', 'cw☐<esc>', { desc = "To-do: Uncheck" })
+vim.keymap.set('n', '<leader>mc', 'cw✔<esc>', { desc = "To-do: Check" }) -- heavy check mark
+vim.keymap.set('n', '<leader>mx', 'cw✘<esc>', { desc = "To-do: Uncheck" }) -- heavy x
+-- vim.keymap.set('n', '<leader>mc', 'cw☑<esc>', { desc = "To-do: Check" }) -- box with check mark
+-- vim.keymap.set('n', '<leader>mx', 'cw☒<esc>', { desc = "To-do: Uncheck" }) -- box with x
+-- vim.keymap.set('n', '<leader>mc', 'cw✓<esc>', { desc = "To-do: Check" }) -- light check mark
+-- vim.keymap.set('n', '<leader>mx', 'cw✗<esc>', { desc = "To-do: Uncheck" }) -- light x
 
--- fzf-lua with default ignores
+-- Filtered search: respect `.nvim_default_ignore` when using the standard bindings.
 vim.keymap.set('n', '<leader>ff', function()
   fzf_ignore.files({}, true)
 end, { desc = "Find Files (Root Dir, filtered)", silent = true })
@@ -53,7 +60,7 @@ vim.keymap.set('n', '<leader>fg', function()
   fzf_ignore.live_grep({}, true)
 end, { desc = "Live Grep (Root Dir, filtered)", silent = true })
 
--- fzf-lua without ignores
+-- Unfiltered search: jump straight to fzf-lua for those times you need everything.
 vim.keymap.set('n', '<leader>faf', function()
   fzf_ignore.files({}, false)
 end, { desc = "Find Files (Root Dir, all)", silent = true })

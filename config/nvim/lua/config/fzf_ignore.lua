@@ -1,10 +1,14 @@
+-- Wrapper logic around LazyVim pickers so we can inject `.nvim_default_ignore`
+-- patterns into fzf-lua without touching the plugin itself.
 local LazyVim = require("lazyvim.util")
 local uv = vim.uv or vim.loop
 
 local M = {}
 
+-- Cache keyed by ignore file path so we only re-read when the file timestamp changes.
 local ignore_cache = {}
 
+-- Locate the nearest ignore file starting from `cwd` and walking toward the filesystem root.
 local function find_ignore_file(cwd)
   cwd = cwd or uv.cwd()
   local found = vim.fs.find(".nvim_default_ignore", {
@@ -14,6 +18,7 @@ local function find_ignore_file(cwd)
   return found[1]
 end
 
+-- Load ignore lines, merging candidates from the picker cwd and the UI's process cwd.
 local function read_ignore_entries(cwd)
   local candidates = {}
   local seen = {}
@@ -28,6 +33,7 @@ local function read_ignore_entries(cwd)
     end
   end
 
+  -- Try the picker cwd first, but also look at the dashboard's cwd in case no root was detected.
   add_candidate(cwd)
   add_candidate(uv.cwd())
 
@@ -41,6 +47,7 @@ local function read_ignore_entries(cwd)
       else
         local timestamp = string.format("%s.%s", stat.mtime.sec or stat.mtime, stat.mtime.nsec or 0)
         local cached = ignore_cache[file]
+        -- Reuse cached results unless the mtime changed.
         if cached and cached.timestamp == timestamp then
           return cached.entries
         end
@@ -75,6 +82,7 @@ local function shellescape(value)
   return vim.fn.shellescape(value)
 end
 
+-- Extend fd's exclude list with the ignore entries.
 local function append_fd_opts(base, entries)
   if not entries or #entries == 0 then
     return base
@@ -86,6 +94,7 @@ local function append_fd_opts(base, entries)
   return table.concat(parts, " "):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
 end
 
+-- Produce both literal and recursive variants so ripgrep skips directories entirely.
 local function normalized_globs(entry)
   local results = {}
   local trimmed = entry
@@ -104,6 +113,7 @@ local function normalized_globs(entry)
   return results
 end
 
+-- Append ripgrep `--glob !pattern` directives for each ignore entry.
 local function append_rg_opts(base, entries)
   if not entries or #entries == 0 then
     return base
@@ -130,6 +140,7 @@ local function append_rg_opts(base, entries)
   end, parts), " ") .. suffix
 end
 
+-- Lua pattern checks used by fzf-lua when filtering results client-side.
 local function make_file_ignore_patterns(entries)
   local patterns = {}
   for _, entry in ipairs(entries) do
@@ -143,6 +154,7 @@ local function make_file_ignore_patterns(entries)
   return patterns
 end
 
+-- Materialise the ignore list into provider-specific options before calling fzf-lua.
 local function apply_ignore(command, opts)
   local entries = read_ignore_entries(opts.cwd)
   if #entries == 0 then
@@ -170,6 +182,7 @@ local function apply_ignore(command, opts)
   return opts
 end
 
+-- Mirror LazyVim's root resolution so the helper can be swapped into existing pickers.
 local function resolve_root(opts)
   if opts.cwd then
     return opts.cwd
@@ -186,6 +199,7 @@ local function resolve_root(opts)
   return opts.cwd
 end
 
+-- Generic entrypoint for the keymaps; toggles ignore support on/off per call.
 function M.open(command, opts, include_ignore)
   opts = vim.deepcopy(opts or {})
   resolve_root(opts)
@@ -195,6 +209,7 @@ function M.open(command, opts, include_ignore)
   LazyVim.pick.open(command, opts)
 end
 
+-- Convenience wrappers for the common pickers we override.
 function M.files(opts, include_ignore)
   return M.open("files", opts, include_ignore)
 end
