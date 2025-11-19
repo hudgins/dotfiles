@@ -11,6 +11,7 @@ local default_config = {
   base_ref = nil,
   remote = "origin",
   include_untracked = true,
+  include_worktree = true, -- add staged/unstaged edits on top of branch commits
   git_diff_args = { "--find-renames" },
   fallback_refs = nil,
 }
@@ -164,6 +165,65 @@ local function resolve_base_ref(config, repo_root)
   return nil, upstream_err or "Unable to determine upstream reference"
 end
 
+-- Maintain a lookup table so later sources (e.g. working tree) can update an
+-- existing entry instead of duplicating nodes.
+local function add_or_update_entry(entries, lookup, entry)
+  local key = entry.relative_path
+  if not key or key == "" then
+    return
+  end
+  local existing = lookup[key]
+  if existing then
+    for k, v in pairs(entry) do
+      if v ~= nil then
+        existing[k] = v
+      end
+    end
+    return existing
+  end
+  lookup[key] = entry
+  table.insert(entries, entry)
+  return entry
+end
+
+-- Append staged/unstaged changes from the working tree using
+-- `git status --porcelain` output.
+local function collect_worktree_entries(add_entry, repo_root, base_ref)
+  local status_lines = run_git({ "status", "--porcelain" }, { cwd = repo_root })
+  if not status_lines then
+    return
+  end
+  for _, line in ipairs(status_lines) do
+    if line ~= "" then
+      local xy, path = line:match("^(..)%s+(.*)$")
+      if xy and path then
+        local rename_from, rename_to = path:match("(.+)%s+->%s+(.+)")
+        local final_path = rename_to or path
+        local staged_status = xy:sub(1, 1)
+        local unstaged_status = xy:sub(2, 2)
+        local status = nil
+        if unstaged_status and unstaged_status ~= " " then
+          status = unstaged_status
+        elseif staged_status and staged_status ~= " " then
+          status = staged_status
+        end
+        status = status or "M"
+        add_entry({
+          status = status,
+          raw_status = xy,
+          relative_path = final_path,
+          previous_path = rename_from,
+          base_ref = base_ref,
+          worktree = true,
+          scope = "worktree",
+          staged_status = staged_status ~= " " and staged_status or nil,
+          unstaged_status = unstaged_status ~= " " and unstaged_status or nil,
+        })
+      end
+    end
+  end
+end
+
 local function collect_diff_entries(base_ref, config, repo_root)
   local args = { "diff", "--name-status" }
   for _, argument in ipairs(config.git_diff_args or default_config.git_diff_args) do
@@ -177,6 +237,10 @@ local function collect_diff_entries(base_ref, config, repo_root)
   end
 
   local entries = {}
+  local lookup = {}
+  local function add_entry(entry)
+    return add_or_update_entry(entries, lookup, entry)
+  end
   for _, line in ipairs(lines) do
     if line ~= "" then
       local parts = vim.split(line, "\t", { plain = true })
@@ -193,12 +257,13 @@ local function collect_diff_entries(base_ref, config, repo_root)
         end
         local relative_path = new_path or old_path
         if relative_path and relative_path ~= "" then
-          table.insert(entries, {
+          add_entry({
             status = status,
             raw_status = raw_status,
             relative_path = relative_path,
             previous_path = old_path,
             base_ref = base_ref,
+            scope = "branch",
           })
         end
       end
@@ -210,19 +275,23 @@ local function collect_diff_entries(base_ref, config, repo_root)
     if untracked then
       for _, path in ipairs(untracked) do
         if path ~= "" then
-          -- Treat untracked files as git status "??" so components/commands can
-          -- present them like standard git_status entries.
-          table.insert(entries, {
+          add_entry({
             status = "?",
             raw_status = "??",
             relative_path = path,
             previous_path = nil,
             base_ref = base_ref,
             is_untracked = true,
+            worktree = true,
+            scope = "worktree",
           })
         end
       end
     end
+  end
+
+  if config.include_worktree ~= false then
+    collect_worktree_entries(add_entry, repo_root, base_ref)
   end
 
   return entries
