@@ -41,6 +41,11 @@ daynote() {
       print
     }' "$template_path" > "$tmp"
 
+    if which carl > /dev/null; then
+      # carl --calendar | perl -pe 's/\e\[[0-9;]*[A-Za-z]//g; s/[ \t]+$//' >> "$tmp"
+      carl --agenda | perl -pe 's/\e\[[0-9;]*[A-Za-z]//g' | grep "$(date +%Y-%m-%d)" | sort | uniq >> "$tmp"
+    fi
+
     # If the last saved entry is from a prior day, append it so unfinished work carries forward.
     prev_entry_file=$(find "$entries_dir" -type f -name '*.md' -print 2>/dev/null | sort | tail -n1)
     if [ -n "$prev_entry_file" ]; then

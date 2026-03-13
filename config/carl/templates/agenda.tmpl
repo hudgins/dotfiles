@@ -1,0 +1,11 @@
+## SPDX-FileCopyrightText: 2025 Birger Schacht <birger@rantanplan.org>
+## SPDX-License-Identifier: MIT
+{% if cli.action.agenda -%}
+{{style(['Bold'])}}Agenda:{{ reset_style() }}
+## {% for event in event_instances -%}
+## {{ style_date(event.date) }}·{{ reset_style() }} {{ event.date|dateformat(format="short") }}: {{ event.event.summary }}{{ reset_style() }}
+## {% endfor -%}
+{% for event in event_instances -%}
+{% set start_dt = event.event.start.DateTime.date_time if event.event.start.DateTime is defined else None %} {{ style_date(event.date) }}·{{ reset_style() }} {{ event.date|dateformat(format="short") }} {% if start_dt %}{{ start_dt|dateformat(format="[hour]:[minute]") }}{% else %}-----{% endif %}: {{ event.event.summary }}{{ reset_style() }}
+{% endfor -%}
+{% endif -%}

@@ -1,0 +1,22 @@
+################################
+# default config file for carl #
+################################
+
+# the name of the carl theme:
+# theme = "default"
+
+template_dir = "/Users/guru/.config/carl/templates"
+
+# you can include multiple ics files:
+[[ical]]
+file = "/Users/guru/.calendars/rg-allan.ics"
+stylenames = ['FGBlue']
+
+[[ical]]
+file = "/Users/guru/.calendars/rg-team.ics"
+stylenames = ['FGYellow']
+
+#[[ical]]
+#file = "birthdays.ics"
+#stylenames = ['FGPurple']
+#weight = 3
