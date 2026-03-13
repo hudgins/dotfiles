@@ -17,6 +17,19 @@ require("fzf-lua").setup({
 
 return {
   {
+    "folke/todo-comments.nvim",
+    keys = {
+      { "<leader>st", false },
+    },
+  },
+  {
+    "folke/snacks.nvim",
+    keys = {
+      { "<leader>sw", false, mode = { "n", "x" } },
+    },
+  },
+
+  {
     "ellisonleao/gruvbox.nvim",
     opts = function()
       local Gruvbox = require('gruvbox')

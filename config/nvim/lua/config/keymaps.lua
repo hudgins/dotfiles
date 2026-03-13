@@ -4,6 +4,7 @@
 
 -- Wrap stock LazyVim pickers so we can flip the ignore list on/off per mapping.
 local fzf_ignore = require("config.fzf_ignore")
+local project_grep = require("config.project_grep")
 
 -- clipboard
 vim.keymap.set({'n', 'v'}, '<leader>Y', '"+y', { desc = "Yank to system clipboard" })
@@ -86,3 +87,19 @@ end, { desc = "Find Files (cwd, all)", silent = true })
 vim.keymap.set('n', '<leader>fag', function()
   fzf_ignore.live_grep({}, false)
 end, { desc = "Live Grep (Root Dir, all)", silent = true })
+
+vim.keymap.set('n', '<leader>sg', function()
+  project_grep.grep_filtered()
+end, { desc = "Grep (Root Dir, filtered)", silent = true })
+
+vim.keymap.set('n', '<leader>sa', function()
+  project_grep.grep()
+end, { desc = "Grep (Root Dir, all)", silent = true })
+
+vim.keymap.set('n', '<leader>st', function()
+  project_grep.grep_tests()
+end, { desc = "Grep Tests (Root Dir)", silent = true })
+
+vim.keymap.set({ 'n', 'x' }, '<leader>sw', function()
+  project_grep.grep_word_filtered()
+end, { desc = "Visual selection or word (Root Dir, filtered)", silent = true })
