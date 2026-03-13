@@ -70,7 +70,7 @@ return {
   },
 
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = {
       automatic_installation = {
         exclude = { "phpactor" }
@@ -99,6 +99,7 @@ return {
   },
   {
     "eandrju/cellular-automaton.nvim",
+    cmd = { "CellularAutomaton" },
     keys = {
       { mode = { "n" }, "<leader>z", "<cmd>CellularAutomaton make_it_rain<CR>", desc = "Make it rain!" },
     }
@@ -146,7 +147,7 @@ return {
     },
   },
   {
-    "echasnovski/mini.pairs",
+    "nvim-mini/mini.pairs",
     opts = {
       modes = { insert = true, command = false, terminal = false },
     },

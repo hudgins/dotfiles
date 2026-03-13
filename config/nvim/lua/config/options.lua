@@ -39,3 +39,6 @@ opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,n:blinkon3000,n:blink
 vim.g.lazyvim_php_lsp = "intelephense"
 -- vim.lsp.set_log_level("debug")
 -- tail -f ~/.local/state/nvim/lsp.log | grep wp-content
+
+-- stop LazyVim from setting the project root to the front-end files when one is loaded
+vim.g.root_spec = { "cwd" }

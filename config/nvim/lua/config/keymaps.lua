@@ -23,7 +23,21 @@ vim.keymap.set({'n', 'v'}, '<leader>gH', function() Snacks.gitbrowse() end, { de
 
 -- save
 vim.keymap.set('n', '<D-s>', '<cmd>update<CR>', { desc = "Save file if changed" })
-vim.keymap.set('n', '<leader><space>', '<cmd>update<CR>', { desc = "Save file if changed" })
+vim.keymap.set('n', '<leader><space>', function()
+  vim.cmd.update()
+  -- Little dopamine hit: 1-in-10 chance of triggering the rain animation after a save.
+  if math.random(10) == 1 then
+    -- Schedule so Lazy can auto-load the command, and guard against setups
+    -- where CellularAutomaton is disabled.
+    vim.schedule(function()
+      local preset = math.random(2) == 1 and "make_it_rain" or "scramble"
+      local ok, err = pcall(vim.cmd, "CellularAutomaton " .. preset)
+      if not ok then
+        vim.notify(err or "CellularAutomaton command unavailable", vim.log.levels.WARN)
+      end
+    end)
+  end
+end, { desc = "Save file if changed" })
 vim.keymap.set('n', '<D-S-s>', '<cmd>wall<CR>', { desc = "Save all changed files" })
 vim.keymap.set('n', '<leader><enter>', '<cmd>wall<CR>', { desc = "Save all changed files" })
 
