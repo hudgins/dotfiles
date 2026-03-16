@@ -11,6 +11,7 @@
 --     end
 -- })
 local configs = require("lspconfig.configs")
+local lsp_fallback = require("config.lsp_fallback")
 
 if not configs.pico8_ls then
   configs.pico8_ls = {
@@ -24,6 +25,19 @@ if not configs.pico8_ls then
 end
 
 return {
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        ["*"] = {
+          keys = {
+            { "gd", false },
+            { "gd", function() lsp_fallback.goto_definition_or_grep() end, desc = "Goto Definition", has = "definition" },
+          },
+        },
+      },
+    },
+  },
   {
     "neovim/nvim-lspconfig",
     opts = {
