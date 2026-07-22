@@ -7,6 +7,8 @@ fi
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
+#
+export PATH=$HOME/bin:$HOME/.cargo/bin:$PATH
 
 zstyle ':omz:*' aliases no
 # zstyle ':omz:plugins:git' aliases no
@@ -184,7 +186,8 @@ alias ls='lsd'
 alias pr='gh pr view'
 alias prweb='gh pr view --web'
 
-alias mother=codex
+# alias mother=codex
+alias mother=claude
 
 # php-related aliases
 alias phpa='ps aux | grep phpactor | grep -v grep | grep Cellar'
@@ -208,10 +211,10 @@ bindkey '^R' fzf-history-widget
 
 export RIPGREP_CONFIG_PATH=~/.ripgreprc
 
-export PATH="/usr/local/opt/php@8.1/bin:$PATH"
-export PATH="/usr/local/opt/php@8.1/sbin:$PATH"
-export LDFLAGS="-L/usr/local/opt/php@8.1/lib"
-export CPPFLAGS="-I/usr/local/opt/php@8.1/include"
+# export PATH="/usr/local/opt/php@8.1/bin:$PATH"
+# export PATH="/usr/local/opt/php@8.1/sbin:$PATH"
+# export LDFLAGS="-L/usr/local/opt/php@8.1/lib"
+# export CPPFLAGS="-I/usr/local/opt/php@8.1/include"
 
 # timenow() {
 #   node -e "var now = Date.now(); console.log(new Date(now), now)"
@@ -244,6 +247,21 @@ alias myip='curl https://checkip.amazonaws.com'
 alias pagely='TERM=xterm-256color ssh -i ~/.ssh/id_rsa_pagely client_allanhudgins@secure.retreat.guru'
 alias on='~/projects/programs/dev debug on'
 alias off='~/projects/programs/dev debug off'
+
+# sync_clickup()
+#   local -A status_map=(
+#     [open]="1 OPEN"
+#     [approach]="2 APPROACH"
+#     [develop]="3 DEVELOP"
+#     [testing]="4 TESTING"
+#     [milestone]="5.1 ON MILESTONE"
+#     [releasing]="5 RELEASING"
+#     [done]="6 DONE"
+#     [closed]="7 CLOSED"
+#   )
+#   local clickup_status=${status_map[$1]}
+#   local ticket=${git branch --show-current | grep -o 'DEV-[0-9]*'}
+# end
 
 # carapace shell completion
 export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense' # optional
@@ -286,3 +304,20 @@ if [[ -o interactive && $TERM_PROGRAM == "ghostty" ]]; then
 fi
 
 source <(carapace _carapace)
+
+# Reminder of what my Claude Code status line fields mean (~/.claude/statusline.sh)
+statusline-legend() {
+    cat <<'LEGEND'
+Status line:  🌿 branch · 🤖 model effort · 🧠 ctx% · 💰 cost · 🪙 tokens · ⏳ 5h · 📅 wk
+
+  🌿 branch          current git branch (no-git outside a repo)
+  🤖 model + effort  model name and reasoning effort (effort dimmed; hidden if none)
+  🧠 ctx%            context window used — 🧠 green <50% · 🟡 yellow 50-79% · 🔴 red >=80%
+  💰 cost            session cost in USD so far
+  🪙 tokens          tokens currently in context (e.g. 69.0k)
+  ⏳ 5h              5-hour rate-limit window: % used + time to reset (Pro/Max only)
+  📅 wk              weekly rate-limit window: % used + time to reset (Pro/Max only)
+
+Edit ~/.claude/statusline.sh to change thresholds, colors, or labels.
+LEGEND
+}

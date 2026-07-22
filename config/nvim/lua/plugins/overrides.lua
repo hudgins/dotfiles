@@ -23,6 +23,12 @@ return {
     },
   },
   {
+    "ibhagwan/fzf-lua",
+    keys = {
+      { "<leader>gd", false },
+    },
+  },
+  {
     "folke/snacks.nvim",
     keys = {
       { "<leader>sw", false, mode = { "n", "x" } },
@@ -167,5 +173,11 @@ return {
   },
   {
     "bakudankun/pico-8.vim",
+  },
+  {
+    "folke/which-key.nvim",
+    opts = {
+      delay = 500, -- milliseconds before popup appears
+    },
   },
 }
